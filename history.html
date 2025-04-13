@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transaction | BW Bank</title>
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+
+    /* General Styles */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-image: url(https://wallpaperaccess.com/full/2311974.jpg);
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #772626;
+  margin: 0;
+}
+
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1px;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+header .logo img {
+  width: 100px; /* Adjust the logo size */
+}
+
+header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+header nav ul li {
+  margin: 0;
+}
+
+header nav ul li a {
+  text-decoration: none;
+  color: #772626;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+header .menu-icon {
+  display: none;
+  cursor: pointer;
+}
+
+.content {
+  text-align: center;
+  margin-top: 100px;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+  header nav {
+    display: none;
+  }
+
+  header nav.active {
+    display: block;
+  }
+
+  header .menu-icon {
+    display: block;
+    font-size: 30px;
+  }
+
+  header nav ul {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    padding: 20px;
+  }
+
+  header nav ul li a {
+    font-size: 22px;
+  }
+}
+
+
+    .banking-app {
+      background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+      border-radius: 20px;
+      padding: 30px;
+      width: 350px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 2rem; /* Larger font for the heading */
+      font-weight: 600; /* Makes the heading bold */
+    }
+
+    .balance {
+      font-size: 24px; 
+      font-weight: bold;
+      color: #2e8b57;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #4facfe;
+      outline: none;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #4facfe;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 48%;
+    }
+
+    button:hover {
+      background-color: #00c6ff;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #e74c3c;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    th {
+      background-color: #4facfe;
+      color: white;
+    }
+
+    tr:nth-child(even) { 
+      background-color: #f2f2f2; 
+    }
+
+    .history-buttons {
+      margin-top: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .banking-app {
+        width: 90%;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        width: 100%; /* Full-width buttons on smaller screens */
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="logo.png" style="width: 60px; display: block; margin: 0 auto 20px; border-radius: 50%;" />
+    </div>
+    <nav class="navbar">
+      <ul>
+        <li><a href="main.html">Home</a></li>
+        <li><a href="customer.html">Customer Transaction</a></li>
+      </ul>
+    </nav>
+    <div class="menu-icon" onclick="toggleMenu()">
+      <span>&#9776;</span> 
+    </div>
+  </header>
+
+  <div class="banking-app">
+    <h1>BW Bank</h1>
+    <div class="balance">Last Transaction: INR <span id="total">0</span></div>
+
+    <input type="text" id="name" placeholder="Enter Your Name" />
+    <input type="text" id="accountNumber" placeholder="Enter Account Number" />
+    <input type="number" id="amount" placeholder="Enter amount" />
+    
+    <div class="buttons">
+      <button onclick="deposit()">Deposit</button>
+      <button onclick="credit()">Withdraw</button>
+    </div>
+    
+    <div class="message" id="message"></div>
+
+    <div class="history-buttons">
+      <button onclick="toggleHistory()">View Transaction History</button>
+    </div>
+
+    <div id="historySection" style="display: none;">
+      <h2>Transaction History</h2>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody"></tbody>
+      </table>
+      <button onclick="closeHistory()">Close History</button>
+    </div>
+  </div>
+
+  <script>
+    let balance = parseFloat(localStorage.getItem("balance")) || 0;
+    let transactionHistory = JSON.parse(localStorage.getItem("transactionHistory")) || [];
+
+    function updateBalance() {
+      document.getElementById('total').innerText = balance.toFixed(2);
+      localStorage.setItem("balance", balance);
+    }
+
+    function deposit() {
+      const name = document.getElementById('name').value.trim();
+      const accountNo = document.getElementById('accountNumber').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const messageEl = document.getElementById('message');
+
+      if (!name || !accountNo) {
+        messageEl.textContent = "Name and Account Number are required.";
+        messageEl.style.color = "#e74c3c";
+        return;
+      }
+
+      if (!isNaN(amount) && amount > 0) {
+        balance += amount;
+        transactionHistory.push({ type: "Deposit", amount: amount });
+        updateBalance();
+        updateCustomerData(name, accountNo, amount, 0);
+        messageEl.textContent = "Deposit successful!";
+        messageEl.style.color = "#2ecc71";
+      } else {
+        messageEl.textContent = "Enter a valid amount!";
+        messageEl.style.color = "#e74c3c";
+      }
+
+      document.getElementById('amount').value = "";
+    }
+
+    function credit() {
+      const name = document.getElementById('name').value.trim();
+      const accountNo = document.getElementById('accountNumber').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const messageEl = document.getElementById('message');
+
+      if (!name || !accountNo) {
+        messageEl.textContent = "Name and Account Number are required.";
+        messageEl.style.color = "#e74c3c";
+        return;
+      }
+
+      if (!isNaN(amount) && amount > 0) {
+        if (amount <= balance) {
+          balance -= amount;
+          transactionHistory.push({ type: "Withdrawal", amount: amount });
+          updateBalance();
+          updateCustomerData(name, accountNo, 0, amount);
+          messageEl.textContent = "Withdrawal successful!";
+          messageEl.style.color = "#2ecc71";
+        } else {
+          messageEl.textContent = "Insufficient funds!";
+          messageEl.style.color = "#e74c3c";
+        }
+      } else {
+        messageEl.textContent = "Enter a valid amount!";
+        messageEl.style.color = "#e74c3c";
+      }
+
+      document.getElementById('amount').value = "";
+    }
+
+    function toggleHistory() {
+      const historySection = document.getElementById('historySection');
+      if (historySection.style.display === 'none') {
+        historySection.style.display = 'block';
+        updateTransactionHistory();
+      } else {
+        historySection.style.display = 'none';
+      }
+    }
+
+    function closeHistory() {
+      document.getElementById('historySection').style.display = 'none';
+    }
+
+    function updateTransactionHistory() {
+      const historyTableBody = document.getElementById('historyTableBody');
+      historyTableBody.innerHTML = "";
+      transactionHistory.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${transaction.type}</td><td>₹${transaction.amount.toFixed(2)}</td>`;
+        historyTableBody.appendChild(row);
+      });
+      localStorage.setItem("transactionHistory", JSON.stringify(transactionHistory));
+    }
+
+    function updateCustomerData(name, accountNo, depositAmount = 0, withdrawAmount = 0) {
+      let customers = JSON.parse(localStorage.getItem("customers")) || [];
+
+      let customer = customers.find(c => String(c.accountNo) === String(accountNo));
+
+      if (!customer) {
+        customer = {
+          name: name,
+          accountNo: accountNo,
+          deposit: 0,
+          withdraw: 0,
+          balance: 0
+        };
+        customers.push(customer);
+      }
+
+      customer.deposit += depositAmount;
+      customer.withdraw += withdrawAmount;
+      customer.balance = customer.deposit - customer.withdraw;
+
+      localStorage.setItem("customers", JSON.stringify(customers));
+    }
+
+    // Initial load
+    updateBalance();
+    updateTransactionHistory();
+
+    function toggleMenu() {
+      const navbar = document.querySelector('.navbar');
+      navbar.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>

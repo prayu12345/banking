@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login & Register - Firebase</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url(https://media-exp1.licdn.com/dms/image/D5612AQFcXjeV7Ee8Vg/article-cover_image-shrink_720_1280/0/1664239132124?e=2147483647&v=beta&t=abQIpen_REqXq_efkqkRxC9gQhKJzznIhZgGLN3Cs30);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 95vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .container {
+    margin-top: 50px;
+      background: rgba(0, 0, 0, 0.4); /* darker glass base */
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 400px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08); /* subtle border */
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      color: #ffffff;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #e0e0e0;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      font-size: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      transition: 0.3s ease;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    input:focus {
+      border-color: #27ae60;
+      outline: none;
+      background-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #20a256, #2ecc71);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #0c4f28, #27ae60,#033217);
+    }
+
+    .link {
+      text-align: center;
+      color: #d3e4ee;
+      cursor: pointer;
+      margin-top: 14px;
+      font-size: 14px;
+      text-decoration: underline;
+    }
+
+    .link:hover {
+      color: #ffffff;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 15px;
+      min-height: 20px;
+    }
+
+    .error {
+      color: #ff6b6b;
+    }
+
+    .success {
+      color: #2ecc71;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px;
+        border-radius: 16px;
+      }
+
+      input, button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+
+    /* Footer */
+    footer {
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      margin-top: auto;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.6);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Bank Name Header -->
+    
+
+    <img src="logo.png" style="width: 60px; display: block; margin: 0 auto 20px; border-radius: 50%;" />
+    <h2 id="formTitle">Login</h2>
+
+    <div id="form">
+      <!-- Register name field -->
+      <div id="nameField" style="display: none;">
+        <input type="text" id="name" placeholder="Name" />
+      </div>
+
+      <!-- Email input -->
+      <input type="email" id="email" placeholder="Email" />
+
+      <!-- Passwords -->
+      <div id="passwordFields">
+        <input type="password" id="password" placeholder="Password" />
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" style="display: none;" />
+      </div>
+
+      <button onclick="submitForm()">Login</button>
+
+      <!-- Links -->
+      <div class="link" onclick="toggleForm()">Don't have an account? Register</div>
+      <div class="link" onclick="showForgotPassword()">Forgot Password?</div>
+    </div>
+
+    <!-- Forgot Password Section -->
+    <div id="forgotForm" style="display: none;">
+      <input type="email" id="forgotEmail" placeholder="Enter registered email" />
+      <button onclick="sendResetLink()">Send Reset Link</button>
+      <div class="link" onclick="hideForgotPassword()">Back to Login</div>
+    </div>
+
+    <div id="message"></div>
+  </div>
+
+  <!-- Firebase JS SDK -->
+  <script type="module">
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZIcQFB9KmRtP5vjRxBEHUtOWbdR8oXBo",
+  authDomain: "banking-system-c8f0c.firebaseapp.com",
+  projectId: "banking-system-c8f0c",
+  storageBucket: "banking-system-c8f0c.appspot.com",
+  messagingSenderId: "232331929240",
+  appId: "1:232331929240:web:d3eeece2457f51115dd2ed"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+let isLogin = true;
+let canSendReset = true;
+
+window.toggleForm = () => {
+  isLogin = !isLogin;
+  document.getElementById('formTitle').innerText = isLogin ? "Login" : "Register";
+  document.querySelector('button').innerText = isLogin ? "Login" : "Register";
+  document.querySelector('.link').innerText = isLogin ? "Don't have an account? Register" : "Already have an account? Login";
+  document.getElementById('nameField').style.display = isLogin ? "none" : "block";
+  document.getElementById('confirmPassword').style.display = isLogin ? "none" : "block";
+  document.getElementById('forgotForm').style.display = "none";
+  document.getElementById('form').style.display = "block";
+  document.getElementById('message').innerText = "";
+};
+
+window.submitForm = async () => {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const confirmPassword = document.getElementById('confirmPassword').value.trim();
+  const message = document.getElementById('message');
+  message.className = "";
+
+  if (!email || !password || (!isLogin && (!name || !confirmPassword))) {
+    message.textContent = "Please fill all required fields.";
+    message.className = "error";
+    return;
+  }
+
+  if (!isLogin && password !== confirmPassword) {
+    message.textContent = "Passwords do not match.";
+    message.className = "error";
+    return;
+  }
+
+  try {
+    if (isLogin) {
+      await signInWithEmailAndPassword(auth, email, password);
+      message.textContent = "Login successful!";
+      message.className = "success";
+      setTimeout(() => {
+        window.location.href = "main.html"; // ✅ Redirect to another page
+      }, 1000);
+    } else {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      message.textContent = "Registration successful!";
+      message.className = "success";
+      toggleForm();
+    }
+  } catch (err) {
+    message.textContent = err.message;
+    message.className = "error";
+  }
+};
+
+window.showForgotPassword = () => {
+  document.getElementById('form').style.display = "none";
+  document.getElementById('forgotForm').style.display = "block";
+  document.getElementById('formTitle').innerText = "Reset Password";
+  document.getElementById('message').innerText = "";
+};
+
+window.hideForgotPassword = () => {
+  document.getElementById('forgotForm').style.display = "none";
+  document.getElementById('form').style.display = "block";
+  document.getElementById('formTitle').innerText = "Login";
+  document.getElementById('message').innerText = "";
+};
+
+window.sendResetLink = async () => {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const message = document.getElementById('message');
+  message.className = "";
+
+  if (!email) {
+    message.textContent = "Please enter your registered email.";
+    message.className = "error";
+    return;
+  }
+
+  if (!canSendReset) {
+    message.textContent = "Please wait before trying again.";
+    message.className = "error";
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    message.className = "success";
+
+    let secondsLeft = 20;
+    message.textContent = `Password reset email sent! Please wait ${secondsLeft} seconds...`;
+
+    canSendReset = false;
+
+    const countdown = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft > 0) {
+        message.textContent = `Please wait ${secondsLeft} seconds before trying again...`;
+      } else {
+        clearInterval(countdown);
+        canSendReset = true;
+        message.textContent = "You can now try again if needed.";
+        message.className = "success";
+      }
+    }, 1000);
+
+  } catch (err) {
+    message.textContent = err.message;
+    message.className = "error";
+  }
+};
+
+  </script>
+  
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 BlueWave Bank by Sonu. All rights reserved.
+  </footer>
+
+</body>
+</html>
