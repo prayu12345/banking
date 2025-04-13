@@ -1,5 +1,5 @@
 # Basic Banking System
-This task is Completed under The Sparks Foundation @GRIPJUNE2024 Internship. 
+Simple Project 
 
 ## Technologies and Platforms Used:
 1. HTML
